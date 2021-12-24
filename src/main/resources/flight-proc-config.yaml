@@ -1,0 +1,14 @@
+
+
+http:
+  port: "8083"
+  host: "0.0.0.0"
+  
+
+flightSys:
+  host: "flightbooking-sys-api-v1.us-e2.cloudhub.io"
+  port: "80"
+  protocol: "HTTP"
+  basePath: "/"
+  client_id: "b1e4204e10c8479d87fdfed5e07f5702"
+  client_secret: "eB241597Daf542B585389725E5b7ddDf"

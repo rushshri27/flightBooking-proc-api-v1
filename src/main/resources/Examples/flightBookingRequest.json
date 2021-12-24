@@ -1,0 +1,10 @@
+{
+  "flightId": 102,
+    "passengerNames": ["Jay Bhagwat","Rushabh Srishrimal"],
+    "numberOfAdults": 2,
+    "numberOfChilds": 0,
+    "departureDate": "2022-10-01",
+    "departureTime": "09:30:00",
+    "mobileNumber": "+919923567687",
+    "seatsAvailable": 24
+}

@@ -1,0 +1,27 @@
+%dw 2.0
+
+type auto_9610136b_24a1_4ca1_b03e_4d25e02fbbd9_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|
+    source: "Delhi" | "Bengaluru" | "Chennai" | "Shrinagr" | "Goa" | "Pune" | "Mumbai" | "Hyderabad", 
+    destination: "Delhi" | "Bengaluru" | "Chennai" | "Shrinagr" | "Goa" | "Pune" | "Mumbai" | "Hyderabad", 
+    departureDate: String
+  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+

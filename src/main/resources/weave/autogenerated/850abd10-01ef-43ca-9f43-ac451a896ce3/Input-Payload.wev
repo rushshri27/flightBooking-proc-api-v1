@@ -1,0 +1,14 @@
+%dw 2.0
+
+type auto_850abd10_01ef_43ca_9f43_ac451a896ce3_Input_Payload = {
+  departureTime: String, 
+  numberOfAdults: Number, 
+  passengerNames: Array<Any>, 
+  mobileNumber: String, 
+  flightId: Number, 
+  departureDate: String, 
+  numberOfChilds: Number, 
+  seatsAvailable: Number, 
+  _?: Any
+}
+

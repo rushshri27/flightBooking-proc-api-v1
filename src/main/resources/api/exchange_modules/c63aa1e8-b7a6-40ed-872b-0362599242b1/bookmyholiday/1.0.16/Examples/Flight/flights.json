@@ -1,0 +1,24 @@
+[
+    {"flightId" : 101,
+    "source": "Delhi",
+    "destination" : "Mumbai",
+    "departureDate": "2022-01-01",
+    "airlineName": "Indigo",
+    "departureTime": "02:40:00",
+    "arrivalTime": "05:00:00",
+    "totalSeats": 25,
+    "seatsAvailable": 20,
+    "farePerSeat": 1750.00 
+    },
+    {"flightId" : 102,
+    "source": "Pune",
+    "destination" : "Mumbai",
+    "departureDate": "2022-01-01",
+    "airlineName": "Indigo",
+    "departureTime": "03:40:00",
+    "arrivalTime": "05:00:00",
+    "totalSeats": 30,
+    "seatsAvailable": 20,
+    "farePerSeat": 3000.00
+    }
+]

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="getFlights" doc:id="3b439621-99c8-48a7-bf3f-49d763f119ca" >
+		<logger level="INFO" doc:name="Start Flow" doc:id="3adab9b2-ea93-4703-ab42-edc65ae1810d" message='#["getFlights Flow Start: " ++ now() as String]'/>
+		<flow-ref doc:name="inputParameterValidation" doc:id="0212f660-a353-4696-a166-41b26633c890" name="inputParameteValidation"/>
+		<ee:transform doc:name="Setting queryParams Variable" doc:id="7cccfec4-c066-4550-8e03-ec2376a16680" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="queryParams" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"source":attributes.queryParams.source,
+	"destination":attributes.queryParams.destination,
+	"departureDate":attributes.queryParams.departureDate
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Get Flights" doc:id="2aa2c0ec-dfe3-4d06-9ee7-09b3c0a61e27" config-ref="HTTP_Request_configuration" path="/api/flights" responseTimeout="#[300000]">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('flightSys.client_secret'),
+	"client_id" : p('flightSys.client_id')
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"source" : attributes.queryParams.source,
+	"departureDate" : attributes.queryParams.departureDate,
+	"destination" : attributes.queryParams.destination
+}]]]></http:query-params>
+		</http:request>
+		<validation:is-not-empty-collection doc:name="Is not empty collection" doc:id="d58513c5-98cb-4d0d-9f99-fe03745788af" message='#["Flights are not available form " ++ vars.queryParams.source ++ " To " ++ vars.queryParams.destination ++ " on " ++  vars.queryParams.departureDate]'>
+			<error-mapping sourceType="VALIDATION:EMPTY_COLLECTION" targetType="FLIGHT:EMPTY_COLLECTION" />
+		</validation:is-not-empty-collection>
+		<ee:transform doc:name="Transforming payload to require output" doc:id="a74c7c0b-287f-4ba2-905d-b6575a469e7a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End Flow" doc:id="aaeb91b7-421f-4e8e-93be-c934824143a3" message='#["getFlights Flow End: " ++ now() as String]'/>
+	</flow>
+	<sub-flow name="inputParameteValidation" doc:id="03d341dc-adcb-42ad-9074-789ffe1b2090">
+		<validation:is-true doc:name="Is Sorce Valid" doc:id="c832ba99-2b88-4e8e-b3ec-5158bc76b390" expression="#[['MUMBAI','BENGALURU','PUNE','CHENNAI','SHRINAGAR','GOA','DELHI','HYDERABAD'] contains upper(attributes.queryParams.source) ]" message='#["Flights are not available from the selected source-: "++ attributes.queryParams.source]' />
+		<validation:is-true doc:name="Is destination valid" doc:id="c1113044-16cf-4f54-8a55-72d1733398e5" expression="#[['MUMBAI','BENGALURU','PUNE','CHENNAI','SHRINAGAR','GOA','DELHI','HYDERABAD'] contains upper(attributes.queryParams.destination) ]" message='#["Flights are not available to seleceted destination -: "++ attributes.queryParams.destination]' />
+		<validation:is-true doc:name="Is destination and sorce same" doc:id="973d48df-8245-4428-b08a-bdd714a2bbe2" expression="#[upper(attributes.queryParams.source as String) != upper(attributes.queryParams.destination as String)]" message='#["Source and Destination can not be same."]' />
+		<validation:is-true doc:name="Is departure date valid" doc:id="8ca563cc-dbf7-48ed-b234-0f36862f1add" expression='#[attributes.queryParams.departureDate as Date{format:"yyyy-MM-dd"} &gt;= now() as Date{format:"yyyy-MM-dd"}]' message="#[&quot;Departure Date must be greater than or equals to Today's date.&quot;]" />
+	</sub-flow>
+	<flow name="bookFlight" doc:id="27d1d565-141b-407e-8ea3-b2699bf3eef1" >
+		<logger level="INFO" doc:name="Start Flow" doc:id="3b8c6f59-12a6-4780-b275-e44a1c9b29a8" message='#["bookFligh Flow Start: " ++ now() as String]'/>
+		<validation:is-true doc:name="Is Seats Available" doc:id="748dedd4-76df-486f-829b-55b1e4234e98" expression="#[payload.seatsAvailable &gt; 0]" message='#["No seat(s) available for selected flight"] '/>
+		<choice doc:name="Choice" doc:id="dab1e669-be66-4211-8bbf-29eaf1806647" >
+			<when expression='#[payload.departureDate as Date{format:"yyyy-MM-dd"} == now() as Date{format:"yyyy-MM-dd"}]'>
+				<validation:is-true doc:name="Is Departure Time is 2 hrs more than current booking time" doc:id="91c6005f-96a6-47e9-8293-f99278165da6" expression='#[(now() as String{format:"HH:mm:ss"} + |PT2H0M0S|) &lt; payload.departureTime]' message='#["Flight booking is available for all flights up to 2 hours before scheduled departure time. Scheduled departureTime for selected flight is-:"++ payload.departureTime]'/>
+				<validation:is-true doc:name="Is Total seats selected are greater than seats available" doc:id="436f4afe-6e76-4872-84ce-84cdac87ee67" expression="#[(payload.numberOfAdults + payload.numberOfChilds) &lt;= payload.seatsAvailable]" message='#["Total number of seats selected are more than the available number of seats-: " ++ payload.seatsAvailable as String]' />
+			</when>
+			<otherwise >
+				<validation:is-true doc:name="Is Total seats selected are greater than seats available" doc:id="35ae5139-3e70-4701-ab58-4b12fbf4c3bb" expression="#[(payload.numberOfAdults + payload.numberOfChilds) &lt;= payload.seatsAvailable]" message='#["Total number of seats selected are more than the available number of seats-: " ++ payload.seatsAvailable as String]'/>
+			</otherwise>
+		</choice>
+		<http:request method="POST" doc:name="Book Flight" doc:id="8dbc4073-26a7-4dec-b200-f6cf3614d212" config-ref="HTTP_Request_configuration" path="api/flights/bookFlight">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('flightSys.client_secret'),
+	"client_id" : p('flightSys.client_id')
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transforming Payload to require Output" doc:id="36430b12-2201-4082-9966-20eca016d2ca" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End Flow" doc:id="8dc8db63-503e-4470-bc36-1167db252398" message='#["bookFligh Flow End: " ++ now() as String]'/>
+	</flow>
+	<flow name="cancelFlight" doc:id="6879e7fa-80dc-446c-9eaa-e76c64751203" >
+		<logger level="INFO" doc:name="Start Flow" doc:id="ded27365-136a-40d0-a29f-ba960bc197d7" message='#["cancelFlight Flow End: " ++ now() as String]'/>
+		<http:request method="POST" doc:name="getBookedFlightDetails" doc:id="5c1c5a52-2cdc-40af-8b39-ca7e03c18384" config-ref="HTTP_Request_configuration" path="/api/flights/bookedFlightDetails" responseTimeout="#[300000]" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('flightSys.client_secret'),
+	"client_id" : p('flightSys.client_id')
+}]]]></http:headers>
+		</http:request>
+		<validation:is-true doc:name="is Booking available" doc:id="6c59db1f-730f-4f51-91a8-daaaaa947f55" expression="#[payload != null  and sizeOf(payload) &gt; 0   ]" message='#["No flights booked for given input"]'/>
+		<flow-ref doc:name="Refund Calculation" doc:id="109e9ff0-0ed5-498b-971d-1b1d55d9120c" name="refundCalculation"/>
+		<http:request method="DELETE" doc:name="Cancel Booking" doc:id="a5f31cfe-f9d2-4421-aa50-4a8b02c8df67" config-ref="HTTP_Request_configuration" path="/api/flights/cancelFlight/{bookingId}" responseTimeout="#[300000]" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('flightSys.client_secret'),
+	"client_id" : p('flightSys.client_id')
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : payload[0].bookingId
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Transforming Payload to reuired Output" doc:id="f8281942-2c49-44fb-9b41-0c6e0b345e06" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": payload.message,
+	"refundAmount": vars.refund as Number
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End Flow" doc:id="2c362dee-dc62-44d8-9355-8471b0feeaa6" message='#["cancelFlight Flow End: " ++ now() as String]'/>
+	</flow>
+	<sub-flow name="refundCalculation" doc:id="cf9c86d8-2e58-4a9a-9c7a-1e1b96d042f4" >
+		<ee:transform doc:name="Refund Calculation logic" doc:id="75a56fc2-4f5a-4a7a-bbba-0f51ebbb942d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="refund" ><![CDATA[%dw 2.0
+output application/java
+
+var nowDate= now() as String{format:"yyyy-MM-dd"}
+var totalAmount = payload[0].seatsBooked as Number * payload[0].farePerSeat as Number
+var seatsBooked = payload[0].seatsBooked as Number
+var farePerSeat = payload[0].farePerSeat as Number
+fun getRefundAmount(departureDate:String,totalAmount:Number) = 
+    if (departureDate >= (nowDate + |P0Y2M0D|))
+	totalAmount * 0.8
+	else if (departureDate >= (nowDate + |P0Y1M0D|))
+	totalAmount * 0.6
+	else if (departureDate >= (nowDate + |P0Y0M2D|))
+	totalAmount * 0.4
+	else
+	0
+---
+getRefundAmount(payload[0].departureDate,totalAmount)]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+</mule>

@@ -1,0 +1,31 @@
+#%RAML 1.0 Library
+usage: This Library defines basic traits, resourceTypes for BookMyHoliday platform
+
+resourceTypes:
+  collection: !include Resource Types/collection.raml
+  item: !include Resource Types/item.raml
+
+traits:
+  noDataFoundTrait: !include Traits/noDataFoundTrait.raml
+  requestItemTrait: !include Traits/requestItemTrait.raml
+  responseItemTrait: !include Traits/responseItemTrait.raml
+  responseCollectionTrait: !include Traits/responseCollectionTrait.raml
+  cancelResponseTrait: !include Traits/cancelResponseTrait.raml
+  responseItemOkTrait : !include Traits/responseItemOkTrait.raml
+  client_id_required: !include Traits/client_id_required.raml
+
+
+types:
+  noDataFoundError : !include Types/noDataFoundError.raml
+  flight : !include Types/flightBooking/flight.raml
+  flightBookingRequest: !include Types/flightBooking/flightBookingRequest.raml
+  flightBookingResponse: !include Types/flightBooking/flightBookingResponse.raml
+  cancelBookRequest: !include Types/flightBooking/cancelBookRequest.raml
+  bookedFlightDetailsRequest: !include Types/flightBooking/bookedFlightDetailsRequest.raml
+  bookedFlightDetailsResponse: !include Types/flightBooking/bookedFlightDetailsResponse.raml  
+
+
+    
+
+
+  

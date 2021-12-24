@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_f097f392_7abb_4cdc_9932_06ee0ef7dac7_Input_Payload = {
+  flightId: Number, 
+  departureDate: String, 
+  bookingId: Number, 
+  _?: Any
+}
+

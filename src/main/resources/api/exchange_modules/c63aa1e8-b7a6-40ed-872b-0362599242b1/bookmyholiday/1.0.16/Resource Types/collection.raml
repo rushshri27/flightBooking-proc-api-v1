@@ -1,0 +1,7 @@
+#%RAML 1.0 ResourceType
+
+usage: Use this resourceType to represent any collection of items
+description: A collection of <<resourcePathName|!uppercamelcase>>
+get:
+      description: Get all <<resourcePathName|!uppercamelcase>>,     filtered based on Query Parameters 
+      is: [responseCollectionTrait:{"typeName":<<typeName>>,"example":<<example>>},noDataFoundTrait:{"typeName":<<errorTypeName>>,"errorExample":<<errorExample>>}]

@@ -1,0 +1,27 @@
+%dw 2.0
+
+type auto_3b439621_99c8_48a7_bf3f_49d763f119ca_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|
+    source: "Delhi" | "Bengaluru" | "Shrinagr" | "Goa" | "Pune" | "Mumbai" | "Hyderabad", 
+    destination: "Delhi" | "Bengaluru" | "Shrinagr" | "Goa" | "Pune" | "Mumbai" | "Hyderabad", 
+    departureDate: String
+  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+

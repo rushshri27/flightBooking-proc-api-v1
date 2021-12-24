@@ -1,0 +1,12 @@
+#%RAML 1.0 ResourceType
+
+
+usage: Use this resourceType to represent any item
+description: A item of <<resourcePathName|!uppercamelcase>>
+post?:
+      description: This method is for <<resourcePathName|!uppercamelcase>>,based on User Selection 
+      is: [requestItemTrait:{"typeName":<<requestTypeName>>,"example":<<requestExample>>},responseItemTrait:{"typeName":<<reponseTypeName>>,"example":<<responseExample>>}]
+
+delete?:
+  description: This method is used to cancel the <<typeName|!uppercamelcase>> reservation done by the user
+  is: [cancelResponseTrait]

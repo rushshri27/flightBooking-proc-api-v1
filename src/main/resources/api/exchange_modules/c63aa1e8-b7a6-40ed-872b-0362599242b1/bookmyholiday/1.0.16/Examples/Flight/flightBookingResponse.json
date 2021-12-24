@@ -1,0 +1,10 @@
+{"message": "Flight Booked Successfully!!!",
+  "bookingId": 6,
+  "passengerNames": [
+                  "Rushabh Srishimal",
+                  "Jay Bhagwat"
+                              ],
+
+   "departureDate": "2022-02-02" ,
+   "departureTime": "09:30:00"
+   }

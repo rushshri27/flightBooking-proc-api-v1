@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="eab4ddd7-7bc0-405d-b389-5a6b4fbb0d8a" file="flight-proc-config.yaml" />
+	<configuration doc:name="Configuration" doc:id="f6979e04-837a-42fd-b505-7655a795d609" defaultErrorHandler-ref="globalError_Handler" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="34f13564-0266-49a3-9680-fe18bba06285" basePath="${flightSys.basePath}">
+		<http:request-connection host="${flightSys.host}" port="${flightSys.port}" protocol="${flightSys.protocol}"/>
+	</http:request-config>
+	<error-handler name="globalError_Handler" doc:id="711ae9a6-4c8c-47d6-839f-bfa595507e42" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="87c96c4a-87fb-45ef-bee3-0f1d8a0aa620" type="FLIGHT:EMPTY_COLLECTION">
+			<ee:transform doc:name="Transform Message" doc:id="51acec77-eea3-45b4-969d-f9fc18bcf4f3" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<set-variable value="#[404]" doc:name="HTTP Status" doc:id="11304b61-2774-46c3-a721-8fe2b4f3b444" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9f4e41d7-2bf2-433f-8d4e-80ef18490a6a" type="VALIDATION:INVALID_BOOLEAN">
+			<ee:transform doc:name="Transform Message" doc:id="71c23a2f-35a4-425e-938c-94b291511584" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<set-variable value="#[404]" doc:name="HTTP Status" doc:id="0cdd6025-4b3f-4a9f-9c9f-bc89281ec82b" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6d297d19-b018-427c-abe1-31e328362bcf" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="b1baef77-2326-482d-bffc-ba1f73f3fcaa">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

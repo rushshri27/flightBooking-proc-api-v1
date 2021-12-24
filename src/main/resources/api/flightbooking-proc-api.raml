@@ -1,0 +1,59 @@
+#%RAML 1.0
+title: flight-partner-api
+uses:
+  flightLibrary: /exchange_modules/c63aa1e8-b7a6-40ed-872b-0362599242b1/bookmyholiday/1.0.16/booymyholiday.raml
+
+
+/flights:
+  get:
+    displayName: GET Flights
+    description: This method process incoming data and make use of flightBooking system api to give flights data
+    queryParameters:
+      source:
+        displayName: Source
+        required: true
+        type: string
+        enum: [Mumbai,Pune,Bengaluru,Shrinagr,Goa,Delhi,Hyderabad,Chennai]
+
+      destination:
+        displayName: Destination
+        required: true
+        type: 
+        enum: [Mumbai,Pune,Bengaluru,Shrinagr,Goa,Delhi,Hyderabad,Chennai]
+      departureDate:
+        displayName: Departure Date
+        required: true
+        type: date-only
+    is: [flightLibrary.responseCollectionTrait:{"typeName":flightLibrary.flight,"example":!include /exchange_modules/c63aa1e8-b7a6-40ed-872b-0362599242b1/bookmyholiday/1.0.16/Examples/Flight/flights.json}]  
+  post:
+      displayName: Book Flight
+      description: This method process incoming data and make use of flightBooking system api to book flight
+      is: [flightLibrary.requestItemTrait:{"typeName": flightLibrary.flightBookingRequest,
+      "example":!include /exchange_modules/c63aa1e8-b7a6-40ed-872b-0362599242b1/bookmyholiday/1.0.16/Examples/Flight/flightBookingRequest.json},
+      flightLibrary.responseItemTrait:{"typeName":flightLibrary.flightBookingResponse,"example":!include /exchange_modules/c63aa1e8-b7a6-40ed-872b-0362599242b1/bookmyholiday/1.0.16/Examples/Flight/flightBookingResponse.json}]
+
+
+  delete:
+      displayName: Cancel Booked Flight
+      description: This method process incoming daa and make use of flightBooking system api to  used to cancel booked flight
+      body:
+        application/json:
+          type: flightLibrary.cancelBookRequest
+          example: !include /exchange_modules/c63aa1e8-b7a6-40ed-872b-0362599242b1/bookmyholiday/1.0.16/Examples/Flight/cancelBookingRequest.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include /exchange_modules/c63aa1e8-b7a6-40ed-872b-0362599242b1/bookmyholiday/1.0.16/Examples/Flight/cancelBookingResponse.json
+                
+            
+      
+      
+
+      
+
+    
+     
+   
+              
+         
